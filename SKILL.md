@@ -1,5 +1,5 @@
 ---
-name: vps-connector
+name: mo-vps-connector
 description: >
   Create and manage a stable SSH connection to a remote Linux VPS from any Kimi session.
   Stores the private key and connection parameters securely in the workspace so future sessions
@@ -7,7 +7,7 @@ description: >
   "setup VPS connection", "stable SSH to server", "VPS access", "connect to remote server".
 ---
 
-# VPS Connector
+# mo-VPS Connector
 
 Create and manage a stable SSH connection to your remote Linux VPS.
 
