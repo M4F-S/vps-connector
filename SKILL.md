@@ -108,6 +108,42 @@ The skill auto-triggers from the description. The agent will:
 
 ---
 
+## New Session Trigger Guide (If Auto-Trigger Fails)
+
+**Problem:** In a new Kimi session, the agent has **zero memory** of previous sessions. It doesn't know your VPS exists or that there's a saved SSH key. The skill only activates if the right keywords are in the description.
+
+**Solution:** Use one of these exact phrases to trigger the skill:
+
+| Phrase to Say | What Happens |
+|---------------|-------------|
+| `"Connect to my VPS"` | Skill auto-triggers. Agent reads `.vps_connection.json` and connects. |
+| `"SSH to my server"` | Skill auto-triggers. Agent uses saved key to connect. |
+| `"Run command on my VPS"` | Skill auto-triggers. Agent connects and runs the command. |
+| `"Use the VPS connector skill"` | Explicitly asks for the skill. Agent loads `mo-vps-connector`. |
+| `"Check my server at 187.124.2.26"` | Skill triggers on "server" + IP. Agent finds the saved config. |
+
+**If the skill STILL doesn't trigger**, tell the agent explicitly:
+
+```
+"Use the mo-vps-connector skill. The connection config is at 
+/Users/mohamedfathy/Documents/Kimi/Workspaces/Mnemosyne/.vps_connection.json
+and the SSH key is at /Users/mohamedfathy/Documents/Kimi/Workspaces/Mnemosyne/vps_agent_key"
+```
+
+This forces the agent to read the skill and use the saved files.
+
+**Important:** Make sure you're in the **Mnemosyne workspace** (or the workspace where the files were saved). The agent only has access to the current workspace. If you switched workspaces, the files won't be found.
+
+**To check which workspace you're in:**
+```bash
+pwd
+ls -la /Users/mohamedfathy/Documents/Kimi/Workspaces/Mnemosyne/.vps_connection.json 2>/dev/null || echo "Config not found in this workspace"
+```
+
+**If the config is missing**, the agent will guide you through re-creating it (one-time setup again).
+
+---
+
 ## SSH + tmux: Persistent Terminal Sessions
 
 tmux lets you start long-running processes on the VPS that survive SSH disconnections. Perfect for:
@@ -268,6 +304,12 @@ vps_run() {
 | `session not found` | The tmux session name doesn't exist. Use `tmux ls` to list active sessions. |
 
 ## Session FAQ
+
+**Q: The skill didn't trigger in my new session. What do I do?**
+A: New Kimi sessions have no memory. Say explicitly: `"Use the mo-vps-connector skill to connect to my VPS"` or `"Connect to my VPS using the saved config at /Users/mohamedfathy/Documents/Kimi/Workspaces/Mnemosyne/.vps_connection.json"`. This forces the agent to load the skill and read the config.
+
+**Q: I get "Config not found" even though the skill triggered.**
+A: You might be in a different workspace. Check with `pwd`. The config is saved in the **Mnemosyne** workspace. If you switched workspaces, either switch back or tell the agent the full path to the config file.
 
 **Q: Do I need to do anything special when a new Kimi session starts?**
 A: No. Just mention your VPS or server. The skill auto-triggers and the agent reads the saved config.
